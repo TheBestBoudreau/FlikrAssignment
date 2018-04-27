@@ -8,10 +8,11 @@
 
 #import "ViewController.h"
 #import "CATS.h"
+#import "NetworkManager.h"
 #import "CollectionViewCell.h"
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UICollectionView *myCollectionView;
-@property (nonatomic,strong) NSMutableArray *catImageArray;
+@property (nonatomic,strong) NSMutableArray *catArray;
 @property UICollectionViewFlowLayout *defaultLayout;
 
 @end
@@ -20,63 +21,26 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _catImageArray = [NSMutableArray new];
+    _catArray = [NSMutableArray new];
     [self setupdefaultLayout];
 
     self.myCollectionView.collectionViewLayout=self.defaultLayout;
-
+ 
+    NetworkManager *netWork=[NetworkManager new];
     
-    NSURL *url =[NSURL URLWithString:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&format=json&nojsoncallback=1&api_key=c9d0bf60b806129721e6ef9c9c86c7d1&tags=cat"];
-    NSURLRequest *urlRequest = [[NSURLRequest alloc] initWithURL:url];
-    
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session =[NSURLSession sessionWithConfiguration:config];
-    
-    NSURLSessionDataTask *dataTask =[session dataTaskWithRequest:urlRequest completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        if (error){
-            NSLog(@"error %@",error.localizedDescription);
-            return;
-        }
-        NSError *jsonError =nil;
-        NSDictionary *catImages =[NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+    [netWork FetchPhotoURLWithCompletionBlock:^(NSArray *array) {
         
-        if(jsonError){
-            NSLog(@"jsonError: %@",jsonError.localizedDescription);
-            return;
-        }
-        NSDictionary *photos = catImages[@"photos"];
-        NSArray *array = photos [@"photo"];
-        for (NSDictionary *dict in array) {
-//            NSLog(@"https://farm%@.staticflickr.com/%@/%@_%@.jpg",dict [@"farm"],dict[@"server"],dict[@"id"],dict[@"secret"]);
-            CATS *cats = [CATS new];
-            cats.catURL = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@.jpg",dict [@"farm"],dict[@"server"],dict[@"id"],dict[@"secret"]];
-//            cats.catImages = [UIImage imageNamed:cats.catURL];
-            
-            NSURL *url = [NSURL URLWithString:cats.catURL];
-            
-            NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-            NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
-            
-            NSURLSessionDownloadTask *download = [session downloadTaskWithURL:url completionHandler:^(NSURL * _Nullable location, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                if (error){
-                    NSLog(@"error: %@", error.localizedDescription);
-                    return;
-                }
-                NSData *data = [NSData dataWithContentsOfURL:location];
-                UIImage *image = [UIImage imageWithData:data];
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    cats.catImages = image;
-
-                }];
-            }];
-            [download resume];
-            [self.catImageArray addObject:cats];
+        
+        for (NSString* string in array) {
+            CATS *cat = [CATS new];
+            cat.catURL = string;
+            [self.catArray addObject:cat];
         }
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             [self.myCollectionView reloadData];
         }];
+        
     }];
-    [dataTask resume];
 }
 
 
@@ -90,27 +54,38 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return self.catImageArray.count;
+    return self.catArray.count;
 }
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView
                                    cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath{
     CollectionViewCell *cell =[self.myCollectionView dequeueReusableCellWithReuseIdentifier:@"Cellid" forIndexPath:indexPath];
+    CATS *cat = self.catArray[indexPath.item];
     
-
-    for (CATS *cats in self.catImageArray) {
-        cell.myImageView.image=cats.catImages;
-[self.myCollectionView reloadItemsAtIndexPaths:@[indexPath]];
+    if (cat.catImages) { // ToDo rename cat.catImages to cat.catImage
+        cell.myImageView.image = cat.catImages;
+    } else {
         
+        NetworkManager *networkManager = [[NetworkManager alloc] init]; // ToDo Make D.R.Y make property on class instanicate in view did load
+        
+        [networkManager FetchPhotoWithURL:cat.catURL CompletionBlock:^(UIImage *image) {
+            cat.catImages = image;
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                cell.myImageView.image = image;
+            }];
+            
+        }];
     }
-
+    
+    
+    
     return cell;
 }
 
 -(void)setupdefaultLayout{
     
     self.defaultLayout = [[UICollectionViewFlowLayout alloc]init];
-    self.defaultLayout.itemSize = CGSizeMake(300, 250);
+    self.defaultLayout.itemSize = CGSizeMake(150, 250);
     self.defaultLayout.sectionInset = UIEdgeInsetsMake(5, 5, 5, 5);
     self.defaultLayout.minimumInteritemSpacing=5;
     self.defaultLayout.minimumLineSpacing=10;

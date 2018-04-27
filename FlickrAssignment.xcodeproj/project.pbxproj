@@ -17,6 +17,7 @@
 		7E0531BF2092686B00304C17 /* FlickrAssignmentUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0531BE2092686B00304C17 /* FlickrAssignmentUITests.m */; };
 		7E0531D120926DC400304C17 /* CATS.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0531D020926DC400304C17 /* CATS.m */; };
 		7E0531D420927C9E00304C17 /* CollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0531D320927C9E00304C17 /* CollectionViewCell.m */; };
+		7E0B0CCA2092C4EF00271BD3 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E0B0CC92092C4EF00271BD3 /* NetworkManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		7E0531D020926DC400304C17 /* CATS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CATS.m; sourceTree = "<group>"; };
 		7E0531D220927C9E00304C17 /* CollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionViewCell.h; sourceTree = "<group>"; };
 		7E0531D320927C9E00304C17 /* CollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CollectionViewCell.m; sourceTree = "<group>"; };
+		7E0B0CC82092C4EF00271BD3 /* NetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
+		7E0B0CC92092C4EF00271BD3 /* NetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +117,8 @@
 				7E05319D2092686B00304C17 /* ViewController.h */,
 				7E05319E2092686B00304C17 /* ViewController.m */,
 				7E0531A02092686B00304C17 /* Main.storyboard */,
+				7E0B0CC82092C4EF00271BD3 /* NetworkManager.h */,
+				7E0B0CC92092C4EF00271BD3 /* NetworkManager.m */,
 				7E0531D220927C9E00304C17 /* CollectionViewCell.h */,
 				7E0531D320927C9E00304C17 /* CollectionViewCell.m */,
 				7E0531A32092686B00304C17 /* Assets.xcassets */,
@@ -279,6 +284,7 @@
 				7E0531D420927C9E00304C17 /* CollectionViewCell.m in Sources */,
 				7E05319F2092686B00304C17 /* ViewController.m in Sources */,
 				7E0531AA2092686B00304C17 /* main.m in Sources */,
+				7E0B0CCA2092C4EF00271BD3 /* NetworkManager.m in Sources */,
 				7E05319C2092686B00304C17 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
